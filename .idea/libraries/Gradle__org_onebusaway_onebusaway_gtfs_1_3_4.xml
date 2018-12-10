@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.onebusaway:onebusaway-gtfs:1.3.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.onebusaway/onebusaway-gtfs/1.3.4/f321c26f5f409338f311e3380a87197a30284b82/onebusaway-gtfs-1.3.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.onebusaway/onebusaway-gtfs/1.3.4/e8b304a728263850fda4806c03d9b183e6d9fb8/onebusaway-gtfs-1.3.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

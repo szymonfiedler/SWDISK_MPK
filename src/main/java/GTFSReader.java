@@ -1,17 +1,20 @@
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.serialization.GtfsReader;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class GTFSReader {
-    private List<Odjazd> odjazdArray=new ArrayList<>();
-    private GtfsDaoImpl store=new GtfsDaoImpl();
+public class GTFSReader implements Serializable {
+    private List<Odjazd> odjazdArray;
+    private GtfsDaoImpl store = new GtfsDaoImpl();
+
     public GTFSReader(String gtfspath) throws IOException {
         GtfsReader reader = new GtfsReader();
         reader.setInputLocation(new File(gtfspath));
@@ -19,14 +22,15 @@ public class GTFSReader {
         reader.run();
     }
 
-    public List<Odjazd> getData(String stopName,int[] time,Date date){
-        int newTime=((time[0]*60)+time[1])*60;
+    public List<Odjazd> getData(String stopName, int[] time, Date date) {
+        int newTime = ((time[0] * 60) + time[1]) * 60;
         Odjazd odjazd;
-        for (StopTime stoptimes: store.getAllStopTimes()
-             ) {
-            if(stoptimes.getStop().getName().equals(stopName)&&stoptimes.getArrivalTime()>newTime&&stoptimes.getArrivalTime()<(newTime+600)&&(stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
-                odjazd=new Odjazd();
-                odjazd.setCoordinates(stoptimes.getStop().getLat(),stoptimes.getStop().getLon());
+        odjazdArray=new ArrayList<>();
+        for (StopTime stoptimes : store.getAllStopTimes()
+        ) {
+            if (stoptimes.getStop().getName().equals(stopName) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 1800) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
+                odjazd = new Odjazd();
+                odjazd.setCoordinates(stoptimes.getStop().getLat(), stoptimes.getStop().getLon());
                 odjazd.setLineNumber(stoptimes.getTrip().getRoute().getShortName());
                 odjazd.setLeaveTime(odjazd.splitToComponentTimes(BigDecimal.valueOf(stoptimes.getArrivalTime())));
                 odjazd.setNextStop(stoptimes.getTrip().getTripHeadsign());
@@ -38,37 +42,33 @@ public class GTFSReader {
         return odjazdArray;
     }
 
-        private void nextStop(StopTime stopTime, Odjazd odjazd){
-            for (StopTime stoptimes: store.getAllStopTimes()
-            ) {
-                if(stoptimes.getStopSequence()==(stopTime.getStopSequence()+1)&&stoptimes.getTrip().equals(stopTime.getTrip())){
-                    odjazd.setNextStop(stoptimes.getStop().getName());
-                    odjazd.setTimeForNextStop((stoptimes.getArrivalTime()-stopTime.getArrivalTime())/60);
-                }
-
-
+    private void nextStop(StopTime stopTime, Odjazd odjazd) {
+        for (StopTime stoptimes : store.getAllStopTimes()
+        ) {
+            if (stoptimes.getStopSequence() == (stopTime.getStopSequence() + 1) && stoptimes.getTrip().equals(stopTime.getTrip())) {
+                odjazd.setNextStop(stoptimes.getStop().getName());
+                odjazd.setTimeForNextStop((stoptimes.getArrivalTime() - stopTime.getArrivalTime()) / 60);
             }
+
+
         }
-    @SuppressWarnings( "deprecation" )
-    private String  whatDate(Date date){
-        if(date.getDay()==0) return "4";
-        else if(date.getDay()==1||date.getDay()==2||date.getDay()==3||date.getDay()==4) return "6";
-        else if(date.getDay()==5) return "8";
+    }
+
+    @SuppressWarnings("deprecation")
+    private String whatDate(Date date) {
+        if (date.getDay() == 0) return "4";
+        else if (date.getDay() == 1 || date.getDay() == 2 || date.getDay() == 3 || date.getDay() == 4) return "6";
+        else if (date.getDay() == 5) return "8";
         else return "3";
     }
 
 
-
-
-
-
-
-    class Odjazd{
+    class Odjazd {
         private String lineNumber;
         private String nextStop;
         private int timeForNextStop;
         private int[] leaveTime;
-        private Double[] coordinates=new Double[2];
+        private Double[] coordinates = new Double[2];
 
         @Override
         public String toString() {
@@ -76,7 +76,7 @@ public class GTFSReader {
                     "lineNumber='" + lineNumber + '\'' +
                     ", nextStop='" + nextStop + '\'' +
                     ", timeForNextStop=" + timeForNextStop +
-                    ", leaveTime=" + (leaveTime[0]+":"+leaveTime[1]+":00") +
+                    ", leaveTime=" + (leaveTime[0] + ":" + leaveTime[1] + ":00") +
                     ", coordinates=" + Arrays.toString(coordinates) +
                     '}';
         }
@@ -85,9 +85,9 @@ public class GTFSReader {
             return coordinates;
         }
 
-        public void setCoordinates(Double coordinates1,Double coordinates2) {
-            coordinates[0]=coordinates1;
-            coordinates[1]=coordinates2;
+        public void setCoordinates(Double coordinates1, Double coordinates2) {
+            coordinates[0] = coordinates1;
+            coordinates[1] = coordinates2;
         }
 
         public String getLineNumber() {
@@ -122,8 +122,7 @@ public class GTFSReader {
             this.leaveTime = leaveTime;
         }
 
-        public int[] splitToComponentTimes(BigDecimal biggy)
-        {
+        public int[] splitToComponentTimes(BigDecimal biggy) {
             long longVal = biggy.longValue();
             int hours = (int) longVal / 3600;
             int remainder = (int) longVal - hours * 3600;
@@ -131,7 +130,7 @@ public class GTFSReader {
             remainder = remainder - mins * 60;
             int secs = remainder;
 
-            int[] ints = {hours , mins , secs};
+            int[] ints = {hours, mins, secs};
             return ints;
         }
 

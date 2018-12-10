@@ -19,7 +19,7 @@ public class Connection {
         start.endStop = startName;
         this.map.put(this.startName,start);
         try{
-            gtfsReader=new GTFSReader("C:\\Users\\malcz\\IdeaProjects\\SWDISK_MPK");
+            gtfsReader=new GTFSReader("C:\\Users\\Szymon\\IdeaProjects\\SWDISK_MPK");
         } catch (IOException ioe){
             System.out.println("Nie znaleziono GTFS");
         }
@@ -47,7 +47,9 @@ public class Connection {
 
     public ArrayList<String> CreateRoutes(Route route){
         String from = this.startName;
-        int[] time = this.startAt;
+        int[] time = {0,0};
+        time[0] = this.startAt[0];
+        time[1] = this.startAt[1];
         ArrayList<String> toExplore = new ArrayList<String>();
         if(route != null){
             from = route.endStop;
@@ -60,10 +62,10 @@ public class Connection {
         }
         else route = new Route();
         List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time,new Date());
-        //System.out.println(from+" at "+time[0]+":"+time[1]);
+     //  System.out.println(from+" at "+time[0]+":"+time[1]);
         for (GTFSReader.Odjazd odjazd:odjazds)
         {
-           // System.out.println(odjazd);
+      //      System.out.println(odjazd);
             Route test = route.copy();
             int timeToNextStop = timeDiff(time, odjazd.getLeaveTime())+odjazd.getTimeForNextStop();
             Line line = new Line(odjazd.getLineNumber(),from,odjazd.getNextStop(),timeToNextStop);

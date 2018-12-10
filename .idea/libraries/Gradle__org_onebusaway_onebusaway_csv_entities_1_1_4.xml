@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.onebusaway:onebusaway-csv-entities:1.1.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.onebusaway/onebusaway-csv-entities/1.1.4/d31d3b3b5260aaf9ef0e1a6fc36c266b7f1bf79a/onebusaway-csv-entities-1.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.onebusaway/onebusaway-csv-entities/1.1.4/a3588bf1bb145ca73f772e386c715b84f9950ffd/onebusaway-csv-entities-1.1.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
