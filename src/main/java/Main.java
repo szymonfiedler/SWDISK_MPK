@@ -3,7 +3,6 @@ public class Main {
     public static void main(String[] args) {
 
             int[] time = {10,00};
-            System.out.println(time[0]);
             String start = "Dzielna";
             String target = "PL. GRUNWALDZKI";
             System.out.println(start+" - "+target+" at "+time[0]+":"+time[1]+":00");
