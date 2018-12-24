@@ -33,10 +33,23 @@ public class Route {
         cp.lines = this.lines;
         return cp;
     }
-    public void print(){
+
+    @Override
+    public String toString() {
+        String result = "";
+
+        String last="";
+        String line = "";
+
         for(Line l : route){
-            l.print();
+            if(!l.lineNumber.equals(line) && !last.equals("")){
+                result += "Take line "+ line + " to " + last +"\n";
+            }
+            line = l.lineNumber;
+            last = l.endStop;
         }
-        System.out.println("You will arrive in "+this.time+" minutes and switch the line " + (this.lines-1) + " times.");
+        result += "Take line "+ line + " to " + last +"\n";
+        result += ("You will arrive in "+this.time+" minutes and switch the line " + (this.lines-1) + " times.");
+        return result;
     }
 }

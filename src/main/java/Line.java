@@ -10,7 +10,4 @@ public class Line {
         this.endStop = stop;
         this.time = time;
     }
-    public void print(){
-        System.out.println("Take line "+lineNumber+" to "+endStop);
-    }
 }
