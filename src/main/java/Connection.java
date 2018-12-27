@@ -27,7 +27,7 @@ public class Connection {
         start.endStop = startName;
         this.map.put(this.startName,start);
         try{
-            gtfsReader=new GTFSReader("C:\\Users\\malcz\\IdeaProjects\\SWDISK_MPK");
+            gtfsReader=new GTFSReader("GTFS");
         } catch (IOException ioe){
             System.out.println("Nie znaleziono GTFS");
         }
