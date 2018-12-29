@@ -30,6 +30,7 @@ public class GTFSReader implements Serializable {
         ) {
             if (stoptimes.getStop().getName().equals(stopName) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 1800) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
                 odjazd = new Odjazd();
+
                 odjazd.setCoordinates(stoptimes.getStop().getLat(), stoptimes.getStop().getLon());
                 odjazd.setLineNumber(stoptimes.getTrip().getRoute().getShortName());
                 odjazd.setLeaveTime(odjazd.splitToComponentTimes(BigDecimal.valueOf(stoptimes.getArrivalTime())));
@@ -64,6 +65,7 @@ public class GTFSReader implements Serializable {
 
 
     class Odjazd {
+        private Double[] sourceCoordinates = new Double[2];
         private String lineNumber;
         private String nextStop;
         private int timeForNextStop;
@@ -135,5 +137,12 @@ public class GTFSReader implements Serializable {
         }
 
 
+        public void setSourceCoordinates(Double[] sourceCoordinates) {
+            this.sourceCoordinates = sourceCoordinates;
+        }
+
+        public Double[] getSourceCoordinates() {
+            return sourceCoordinates;
+        }
     }
 }
