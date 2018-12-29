@@ -10,14 +10,13 @@ public class Connection {
     public int travelTime;
     public int lines = 2000000;
 
-    public boolean avoidLineSwitching;
     private HashMap<String, Route> map;
     private GTFSReader gtfsReader;
     private Double[] targetCoordinates;
 
     private HashMap<String, Double[]> coords = new HashMap<String, Double[]>();
 
-    public Connection(String startName, String stopName, int[] startAt, boolean avoidLineSwitching){
+    public Connection(String startName, String stopName, int[] startAt){
         this.startName = startName;
         this.stopName = stopName;
         this.startAt = startAt;
@@ -32,7 +31,6 @@ public class Connection {
             System.out.println("Nie znaleziono GTFS");
         }
         this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt,new Date()).get(0).getCoordinates();
-        this.avoidLineSwitching = avoidLineSwitching;
     }
 
     public void search(){
@@ -120,27 +118,10 @@ public class Connection {
             Route test = route.copy();
             int timeToNextStop = timeDiff(time, odjazd.getLeaveTime())+odjazd.getTimeForNextStop();
             Line line = new Line(odjazd.getLineNumber(),from,odjazd.getNextStop(),timeToNextStop);
-            int totalTimeAfter = timeDiff(odjazd.getLeaveTime(), this.startAt) + odjazd.getTimeForNextStop();
+            int totalTimeAfter = timeDiff(this.startAt, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
             if(!coords.containsKey(odjazd.getNextStop())){
                 coords.put(odjazd.getNextStop(), odjazd.getCoordinates());
             }
-            if(this.avoidLineSwitching){
-                test.add(line);
-                if(test.lines<this.lines && timeDiff(time, odjazd.getLeaveTime()) >= 0){
-                    if (!map.containsKey(odjazd.getNextStop())) {
-                        map.put(odjazd.getNextStop(), test);
-                        toExplore.add(odjazd.getNextStop());
-                    } else {
-                        Route current = map.get(odjazd.getNextStop());
-                        if (current.lines > test.lines) {
-                            toExplore.add(odjazd.getNextStop());
-                            map.replace(odjazd.getNextStop(), test);
-                            if (odjazd.getNextStop().equals(this.stopName)) this.lines = test.lines;
-                        }
-                    }
-                }
-            }
-            else {
                 if (totalTimeAfter + this.getDistance(odjazd.getCoordinates(),this.targetCoordinates)*0.7< travelTime && timeDiff(time, odjazd.getLeaveTime()) >= 0) {
 
                     test.add(line);
@@ -156,7 +137,6 @@ public class Connection {
                         }
                     }
                 }
-            }
         }
         if(map.containsKey(this.stopName)){
             Route test = map.get(this.stopName);
