@@ -31,7 +31,7 @@ public class Convinient {
         start.endStop = startName;
         this.routes = new ArrayList<Route>();
         try{
-            gtfsReader=new GTFSReader("C:\\Users\\malcz\\IdeaProjects\\SWDISK_MPK");
+            gtfsReader=new GTFSReader("GTFS");
         } catch (IOException ioe){
             System.out.println("Nie znaleziono GTFS");
         }
