@@ -1,9 +1,14 @@
 import java.util.Scanner;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.spi.*;
 
 public class Main {
     public static void main(String[] args) {
-
-     	        Scanner in=new Scanner(System.in);
+            Logger log = (Logger) LoggerFactory.getLogger("org.onebusaway");
+            log.setLevel(Level.OFF);
+            Scanner in=new Scanner(System.in);
             System.out.println("Podaj godzine odjazdu w konwencji hh:mm");
             String txt=in.nextLine();
             int[] time = new int[2];
