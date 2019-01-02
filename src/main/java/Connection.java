@@ -30,7 +30,7 @@ public class Connection {
         } catch (IOException ioe){
             System.out.println("Nie znaleziono GTFS");
         }
-        this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt,new Date()).get(0).getCoordinates();
+        this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt,Main.date).get(0).getCoordinates();
     }
 
     public void search(){
@@ -110,7 +110,7 @@ public class Connection {
         if(timeDiff(this.startAt,time)>this.travelTime){
             return toExplore;
         }
-        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time,new Date());
+        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time,Main.date);
         //System.out.println(from+" at "+time[0]+":"+time[1]+ " found: "+(map.containsKey(this.stopName)?map.get(this.stopName).time:"nope"));
         for (GTFSReader.Odjazd odjazd:odjazds)
         {

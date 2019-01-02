@@ -21,7 +21,7 @@ public class Convinient {
 
     private boolean deepSearch;
 
-    public Convinient(String startName, String stopName, int[] startAt, boolean deepSearch){
+    public Convinient(String startName, String stopName, int[] startAt, boolean deepSearch) {
         this.startName = startName;
         this.stopName = stopName;
         this.startAt = startAt;
@@ -30,15 +30,15 @@ public class Convinient {
         Route start = new Route();
         start.endStop = startName;
         this.routes = new ArrayList<Route>();
-        try{
-            gtfsReader=new GTFSReader("GTFS");
-        } catch (IOException ioe){
+        try {
+            gtfsReader = new GTFSReader("GTFS");
+        } catch (IOException ioe) {
             System.out.println("Nie znaleziono GTFS");
         }
-        this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt,new Date()).get(0).getCoordinates();
+        this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt, Main.date).get(0).getCoordinates();
 
-        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(startName, startAt,new Date());
-        distances.put(this.startName, getDistance(odjazds.get(0).getCoordinates(),this.targetCoordinates));
+        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(startName, startAt, Main.date);
+        distances.put(this.startName, getDistance(odjazds.get(0).getCoordinates(), this.targetCoordinates));
         start.endStop = startName;
         start.lines = 1;
         start.explored = false;
@@ -47,11 +47,11 @@ public class Convinient {
     }
 
 
-    public void search(){
+    public void search() {
         Route best = this.pickBest();
-        while(best != null){
+        while (best != null) {
             this.explore(best);
-            if(!best.endStop.equals(this.stopName) && this.routes.size()>1){
+            if (!best.endStop.equals(this.stopName) && this.routes.size() > 1) {
                 this.routes.remove(this.routes.indexOf(best));
             }
             best = this.pickBest();
@@ -60,44 +60,43 @@ public class Convinient {
 
     }
 
-    private void explore (Route best){
+    private void explore(Route best) {
         best.explored = true;
         String from = best.endStop;
-        int[] time = {0,0};
+        int[] time = {0, 0};
         time[0] = this.startAt[0];
         time[1] = this.startAt[1];
-        time[0] += Math.floorDiv(best.time,60);
+        time[0] += Math.floorDiv(best.time, 60);
         time[1] += best.time;
-            if(time[1] > 60){
-                time[1] =time[1] % 60;
-                time[0]++;
-            }
-        if(timeDiff(this.startAt,time)>this.travelTime && best.lines >= this.lines){
+        if (time[1] > 60) {
+            time[1] = time[1] % 60;
+            time[0]++;
+        }
+        if (timeDiff(this.startAt, time) > this.travelTime && best.lines >= this.lines) {
             return;
         }
 
         //System.out.println(from+" at "+time[0]+":"+time[1]+ " best so far - time: "+this.travelTime+" lines :"+this.lines+" branches left to explore: "+this.routes.size());
-        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time,new Date());
+        List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time, Main.date);
 
-        for (GTFSReader.Odjazd odjazd:odjazds) {
-            if(!odjazd.getNextStop().equals(from)){
+        for (GTFSReader.Odjazd odjazd : odjazds) {
+            if (!odjazd.getNextStop().equals(from)) {
                 Route test = best.copy();
                 int timeToNextStop = timeDiff(time, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
                 Line line = new Line(odjazd.getLineNumber(), from, odjazd.getNextStop(), timeToNextStop);
                 if (!distances.containsKey(odjazd.getNextStop())) {
-                    distances.put(odjazd.getNextStop(), getDistance(odjazd.getCoordinates(),this.targetCoordinates));
+                    distances.put(odjazd.getNextStop(), getDistance(odjazd.getCoordinates(), this.targetCoordinates));
                 }
                 test.add(line);
 
-                int totalTimeAfter = timeDiff( this.startAt, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
-                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop)*0.7< travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0)) {
+                int totalTimeAfter = timeDiff(this.startAt, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
+                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop) * 0.7 < travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0)) {
                     this.routes.add(test);
                     if (test.endStop.equals(this.stopName) && ((test.lines < this.lines) || (test.time < this.travelTime))) {
-                        if(this.deepSearch){
+                        if (this.deepSearch) {
                             this.lines = test.lines;
                             this.travelTime = test.time;
-                        }
-                        else{
+                        } else {
                             test.explored = true;
                             this.routes.clear();
                             this.routes.add(test);
@@ -109,13 +108,13 @@ public class Convinient {
         }
     }
 
-    private Route pickBest(){
+    private Route pickBest() {
         Route best = null;
         Double bestScore = 200000000.0;
         int minLines = this.lines;
 
-        for(Route r: routes){
-            if(!r.explored) {
+        for (Route r : routes) {
+            if (!r.explored) {
                 Double distance = this.distances.get(r.endStop);
                 r.distance = distance;
                 Double score = r.time + distance;
@@ -130,22 +129,22 @@ public class Convinient {
         return best;
     }
 
-    private static Double getDistance(Double[] start, Double[] stop){
-        return Math.sqrt(Math.pow(start[0]-stop[0],2)+Math.pow(start[1]-stop[1],2))*333;
+    private static Double getDistance(Double[] start, Double[] stop) {
+        return Math.sqrt(Math.pow(start[0] - stop[0], 2) + Math.pow(start[1] - stop[1], 2)) * 333;
     }
 
-    private int timeDiff(int[] t2, int[] t1){
-        int time = (t1[0]-t2[0])*60 + t1[1]-t2[1];
+    private int timeDiff(int[] t2, int[] t1) {
+        int time = (t1[0] - t2[0]) * 60 + t1[1] - t2[1];
         return time;
     }
 
-    public Route getRoute(){
+    public Route getRoute() {
 
         Route best = null;
         int bestScore = 200000000;
         int minLines = this.lines;
 
-        for(Route r: routes) {
+        for (Route r : routes) {
             if (r.endStop.equals(this.stopName) && r.lines <= minLines && r.time < bestScore) {
                 best = r;
                 bestScore = r.time;
