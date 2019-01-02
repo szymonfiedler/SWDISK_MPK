@@ -28,7 +28,7 @@ public class GTFSReader implements Serializable {
         odjazdArray=new ArrayList<>();
         for (StopTime stoptimes : store.getAllStopTimes()
         ) {
-            if (stoptimes.getStop().getName().equals(stopName) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 1800) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
+            if (stoptimes.getStop().getName().toLowerCase().equals(stopName.toLowerCase()) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 1800) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
                 odjazd = new Odjazd();
 
                 odjazd.setCoordinates(stoptimes.getStop().getLat(), stoptimes.getStop().getLon());
