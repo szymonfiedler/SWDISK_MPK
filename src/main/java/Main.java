@@ -4,16 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import org.slf4j.LoggerFactory;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+//import ch.qos.logback.classic.Level;
+//import ch.qos.logback.classic.Logger;
 
 
 public class Main {
         public static Date date;
 
     public static void main(String[] args) {
-            Logger log = (Logger) LoggerFactory.getLogger("org.onebusaway");
-            log.setLevel(Level.OFF);
+            //Logger log = (Logger) LoggerFactory.getLogger("org.onebusaway");
+            //log.setLevel(Level.OFF);
             Scanner in=new Scanner(System.in);
             System.out.println("Podaj datę odjazdu w konwencji dd/mm/yyyy");
             String data=in.nextLine();
@@ -46,7 +46,7 @@ public class Main {
             if(result!=null) System.out.println(result);
             else System.out.println("No available connection, check your input.");
             System.out.println("or");
-            Convinient convinient = new Convinient(start, target, time,false);
+            Convinient convinient = new Convinient(start, target, time,true);
             convinient.search();
             result = convinient.getRoute();
             if(result!=null) System.out.println(result);

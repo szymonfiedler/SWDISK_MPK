@@ -18,6 +18,7 @@ public class Convinient {
     private Double[] targetCoordinates;
     private ArrayList<Route> routes;
     private HashMap<String, Double> distances = new HashMap<String, Double>();
+    private HashMap<String, ArrayList<String>> visited = new HashMap<>();
 
     private boolean deepSearch;
 
@@ -76,6 +77,8 @@ public class Convinient {
             return;
         }
 
+        Route convinientFound = null;
+
         //System.out.println(from+" at "+time[0]+":"+time[1]+ " best so far - time: "+this.travelTime+" lines :"+this.lines+" branches left to explore: "+this.routes.size());
         List<GTFSReader.Odjazd> odjazds = gtfsReader.getData(from, time, Main.date);
 
@@ -87,24 +90,33 @@ public class Convinient {
                 if (!distances.containsKey(odjazd.getNextStop())) {
                     distances.put(odjazd.getNextStop(), getDistance(odjazd.getCoordinates(), this.targetCoordinates));
                 }
-                test.add(line);
+                boolean loop = false;
+                if(test.contains(odjazd.getNextStop(), odjazd.getLineNumber()) || odjazd.getNextStop().equals(this.startName)){
+                    loop = true;
+                }
+                else{
+                    test.add(line);
+                }
 
                 int totalTimeAfter = timeDiff(this.startAt, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
-                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop) * 0.7 < travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0)) {
+                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop) * 0.7 < travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0) && !loop) {
                     this.routes.add(test);
                     if (test.endStop.equals(this.stopName) && ((test.lines < this.lines) || (test.time < this.travelTime))) {
-                        if (this.deepSearch) {
-                            this.lines = test.lines;
-                            this.travelTime = test.time;
-                        } else {
-                            test.explored = true;
-                            this.routes.clear();
-                            this.routes.add(test);
-                            return;
+                        test.explored = true;
+                        this.lines = test.lines;
+                        this.travelTime = test.time;
+                        if (!this.deepSearch) {
+                            convinientFound = test;
                         }
                     }
                 }
             }
+        }
+
+        if(convinientFound != null){
+            this.routes.clear();
+            this.routes.add(convinientFound);
+            return;
         }
     }
 

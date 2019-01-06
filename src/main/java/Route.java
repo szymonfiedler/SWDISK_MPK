@@ -24,6 +24,17 @@ public class Route {
         this.endStop = line.endStop;
         this.time += line.time;
     }
+
+    public boolean contains(String stop, String line){
+        for(Line l : route){
+            if(l.lineNumber.equals(line) && l.endStop.equals(stop)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     public Route copy(){
         Route cp = new Route();
         cp.endStop = this.endStop;
