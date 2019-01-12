@@ -94,7 +94,8 @@ public class Main {
             int firstrandom,nextrandom;
             firstrandom=random.nextInt(2146);
             nextrandom=random.nextInt(2146);
-            while((Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&(Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)){
+            while((Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&
+                    (Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&(stops[nextrandom].equals(stops[firstrandom]))){
                 firstrandom=random.nextInt(2146);
                 nextrandom=random.nextInt(2146);
             }
@@ -122,7 +123,7 @@ public class Main {
                 executor.shutdown(); // This does not cancel the already-scheduled task.
 
                 try {
-                    future.get(10, TimeUnit.MINUTES);
+                    future.get(5, TimeUnit.MINUTES);
                 }
                 catch (InterruptedException ie) {
                     /* Handle the interruption. Or ignore it. */
@@ -163,7 +164,7 @@ public class Main {
                 executor.shutdown(); // This does not cancel the already-scheduled task.
 
                 try {
-                    future.get(10, TimeUnit.MINUTES);
+                    future.get(5, TimeUnit.MINUTES);
                 }
                 catch (InterruptedException ie) {
                     /* Handle the interruption. Or ignore it. */
