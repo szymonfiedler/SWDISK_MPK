@@ -91,6 +91,8 @@ public class Main {
             String startstop = stops[random.nextInt(2146)];
             String stopstop = stops[random.nextInt(2146)];
 
+            System.out.println("Searching connection " + startstop + " to " + stopstop);
+
             int[] time = new int[2];
             time[0] = random.nextInt(24) + 1;
             time[1] = random.nextInt(60) + 1;

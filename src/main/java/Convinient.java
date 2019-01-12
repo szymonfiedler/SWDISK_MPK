@@ -18,7 +18,6 @@ public class Convinient {
     private Double[] targetCoordinates;
     private ArrayList<Route> routes;
     private HashMap<String, Double> distances = new HashMap<String, Double>();
-    private HashMap<String, ArrayList<String>> visited = new HashMap<>();
 
     private boolean deepSearch;
 
@@ -99,7 +98,7 @@ public class Convinient {
                 }
 
                 int totalTimeAfter = timeDiff(this.startAt, odjazd.getLeaveTime()) + odjazd.getTimeForNextStop();
-                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop) * 0.7 < travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0) && !loop) {
+                if ((test.lines <= this.lines) && (totalTimeAfter + this.distances.get(test.endStop) * 0.7 < travelTime) && (timeDiff(time, odjazd.getLeaveTime()) >= 0) && !loop && test.time <= 120) {
                     this.routes.add(test);
                     if (test.endStop.equals(this.stopName) && ((test.lines < this.lines) || (test.time < this.travelTime))) {
                         test.explored = true;

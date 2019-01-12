@@ -12,7 +12,7 @@ public class Connection {
 
     private HashMap<String, Route> map;
     private GTFSReader gtfsReader;
-    private Double[] targetCoordinates;
+    private Double[] targetCoordinates = {0.0,0.0};
 
     private HashMap<String, Double[]> coords = new HashMap<String, Double[]>();
 
@@ -30,8 +30,12 @@ public class Connection {
         } catch (IOException ioe) {
             System.out.println("Nie znaleziono GTFS");
         }
+            try{
+                this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt, Main.date).get(0).getCoordinates();
+            }
+            catch(Exception e){
+            }
 
-            this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt, Main.date).get(0).getCoordinates();
 
 
     }
