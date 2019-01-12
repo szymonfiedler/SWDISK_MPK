@@ -65,6 +65,7 @@ public class Main {
         }
         String stop;
         String[] stops = new String[2146];
+        Float [][] location=new Float[2146][2];
         try {
             bufferedReader.readLine();
         } catch (IOException e) {
@@ -74,6 +75,8 @@ public class Main {
             try {
                 stop=bufferedReader.readLine();
                 stops[i]=stop.substring(stop.indexOf("\"")+1,stop.lastIndexOf("\""));
+                location[i][0]=Float.parseFloat(stop.substring(stop.indexOf(",",stop.lastIndexOf("\""))+1,stop.lastIndexOf(",")));
+                location[i][1]=Float.parseFloat(stop.substring(stop.lastIndexOf(",")+1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -88,8 +91,15 @@ public class Main {
         }
         while(true) {
             Random random = new Random();
-            String startstop = stops[random.nextInt(2146)];
-            String stopstop = stops[random.nextInt(2146)];
+            int firstrandom,nextrandom;
+            firstrandom=random.nextInt(2146);
+            nextrandom=random.nextInt(2146);
+            while((Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&(Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)){
+                firstrandom=random.nextInt(2146);
+                nextrandom=random.nextInt(2146);
+            }
+            String startstop = stops[firstrandom];
+            String stopstop = stops[nextrandom];
 
             System.out.println("Searching connection " + startstop + " to " + stopstop);
 
@@ -169,7 +179,7 @@ public class Main {
 
                 result = convinient.getRoute();
                 if(result!=null){
-                    System.out.println("write conbi");
+                    System.out.println("make convi.txt");
                     bufferedWriter1.newLine();
                     bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n");
                     bufferedWriter1.flush();
