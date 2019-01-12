@@ -6,12 +6,15 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.*;
+
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 public class Main {
     static Date date;
+
 
     public static void main(String[] args) {
         Logger log = (Logger) LoggerFactory.getLogger("org.onebusaway");
@@ -42,6 +45,9 @@ public class Main {
             System.out.println("Podaj przystanek docelowy");
             String target = in.nextLine();
             System.out.println(start+" - "+target+" at "+time[0]+":"+time[1]+":00"+" date "+date.toString());*/
+
+
+
         BufferedReader bufferedReader = null;
         try {
             bufferedReader = new BufferedReader(new FileReader("GTFS/stops.txt"));
@@ -90,27 +96,78 @@ public class Main {
             time[1] = random.nextInt(60) + 1;
             Route result;
             try {
-                Connection fast = new Connection(startstop, stopstop, time);
-                fast.search();
-                result = fast.getRoute();
+                System.out.println("try fast");
+                Connection fast=new Connection(startstop, stopstop, time);
+                final Runnable stuffToDo = new Thread() {
+                    @Override
+                    public void run() {
+                        fast.search();
+                    }
+                };
 
+                final ExecutorService executor = Executors.newSingleThreadExecutor();
+                final Future future = executor.submit(stuffToDo);
+                executor.shutdown(); // This does not cancel the already-scheduled task.
+
+                try {
+                    future.get(10, TimeUnit.MINUTES);
+                }
+                catch (InterruptedException ie) {
+                    /* Handle the interruption. Or ignore it. */
+                }
+                catch (ExecutionException ee) {
+                    /* Handle the error. Or ignore it. */
+                }
+                catch (TimeoutException te) {
+                    /* Handle the timeout. Or ignore it. */
+                }
+                if (!executor.isTerminated())
+                    executor.shutdownNow();
+
+                result = fast.getRoute();
                 if (result != null) {
+                    System.out.println("make fast.txt");
                     bufferedWriter.newLine();
                     String r=startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n";
                    bufferedWriter.write(r);
                    bufferedWriter.flush();
                 }
 
-            } catch (IndexOutOfBoundsException io) {
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try{
+                System.out.println("try convi");
                 Convinient convinient = new Convinient(startstop, stopstop, time, false);
-                convinient.search();
+                final Runnable stuffToDo = new Thread() {
+                    @Override
+                    public void run() {
+                        convinient.search();
+                    }
+                };
+
+                final ExecutorService executor = Executors.newSingleThreadExecutor();
+                final Future future = executor.submit(stuffToDo);
+                executor.shutdown(); // This does not cancel the already-scheduled task.
+
+                try {
+                    future.get(10, TimeUnit.MINUTES);
+                }
+                catch (InterruptedException ie) {
+                    /* Handle the interruption. Or ignore it. */
+                }
+                catch (ExecutionException ee) {
+                    /* Handle the error. Or ignore it. */
+                }
+                catch (TimeoutException te) {
+                    /* Handle the timeout. Or ignore it. */
+                }
+                if (!executor.isTerminated())
+                    executor.shutdownNow();
+
                 result = convinient.getRoute();
                 if(result!=null){
+                    System.out.println("write conbi");
                     bufferedWriter1.newLine();
                     bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n");
                     bufferedWriter1.flush();

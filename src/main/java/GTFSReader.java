@@ -26,27 +26,42 @@ public class GTFSReader implements Serializable {
         int newTime = ((time[0] * 60) + time[1]) * 60;
         Odjazd odjazd;
         odjazdArray=new ArrayList<>();
-        for (StopTime stoptimes : store.getAllStopTimes()
+        name: for (StopTime stoptimes : store.getAllStopTimes()
         ) {
-            if (stoptimes.getStop().getName().toLowerCase().equals(stopName.toLowerCase()) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 1800) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
+            if (stoptimes.getStop().getName().toLowerCase().equals(stopName.toLowerCase()) && stoptimes.getArrivalTime() >= newTime && stoptimes.getArrivalTime() < (newTime + 7200) && (stoptimes.getTrip().getServiceId().getId().equals(whatDate(date)))) {
                 odjazd = new Odjazd();
-
                 odjazd.setCoordinates(stoptimes.getStop().getLat(), stoptimes.getStop().getLon());
                 odjazd.setLineNumber(stoptimes.getTrip().getRoute().getShortName());
                 odjazd.setLeaveTime(odjazd.splitToComponentTimes(BigDecimal.valueOf(stoptimes.getArrivalTime())));
-                odjazd.setNextStop(stoptimes.getTrip().getTripHeadsign());
                 nextStop(stoptimes, odjazd);
-                odjazdArray.add(odjazd);
+
+                if(odjazd.getNextStop()!=null) {
+                    if (odjazdArray != null) {
+                        for (Odjazd odj : odjazdArray) {
+
+                            if (odj.getLineNumber().equals(odjazd.getLineNumber()) && odj.getNextStop().equals(odjazd.getNextStop())) {
+                                continue name;
+                            }
+
+                        }
+                    }
+
+                    odjazdArray.add(odjazd);
+                }
             }
         }
 
         return odjazdArray;
     }
 
+
+
+
     private void nextStop(StopTime stopTime, Odjazd odjazd) {
         for (StopTime stoptimes : store.getAllStopTimes()
         ) {
             if (stoptimes.getStopSequence() == (stopTime.getStopSequence() + 1) && stoptimes.getTrip().equals(stopTime.getTrip())) {
+
                 odjazd.setNextStop(stoptimes.getStop().getName());
                 odjazd.setTimeForNextStop((stoptimes.getArrivalTime() - stopTime.getArrivalTime()) / 60);
             }

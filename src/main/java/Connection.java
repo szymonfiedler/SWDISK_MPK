@@ -30,7 +30,9 @@ public class Connection {
         } catch (IOException ioe) {
             System.out.println("Nie znaleziono GTFS");
         }
-        this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt, Main.date).get(0).getCoordinates();
+
+            this.targetCoordinates = gtfsReader.getData(this.stopName, this.startAt, Main.date).get(0).getCoordinates();
+
 
     }
 
