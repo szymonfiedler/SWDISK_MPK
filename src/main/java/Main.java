@@ -65,7 +65,7 @@ public class Main {
         }
         String stop;
         String[] stops = new String[2146];
-        Float [][] location=new Float[2146][2];
+        Double [][] location=new Double[2146][2];
         try {
             bufferedReader.readLine();
         } catch (IOException e) {
@@ -75,8 +75,8 @@ public class Main {
             try {
                 stop=bufferedReader.readLine();
                 stops[i]=stop.substring(stop.indexOf("\"")+1,stop.lastIndexOf("\""));
-                location[i][0]=Float.parseFloat(stop.substring(stop.indexOf(",",stop.lastIndexOf("\""))+1,stop.lastIndexOf(",")));
-                location[i][1]=Float.parseFloat(stop.substring(stop.lastIndexOf(",")+1));
+                location[i][0]=Double.parseDouble(stop.substring(stop.indexOf(",",stop.lastIndexOf("\""))+1,stop.lastIndexOf(",")));
+                location[i][1]=Double.parseDouble(stop.substring(stop.lastIndexOf(",")+1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,11 +94,12 @@ public class Main {
             int firstrandom,nextrandom;
             firstrandom=random.nextInt(2146);
             nextrandom=random.nextInt(2146);
-            while((Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&
-                    (Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.0001F)&(stops[nextrandom].equals(stops[firstrandom]))){
+
+            do{
+
                 firstrandom=random.nextInt(2146);
                 nextrandom=random.nextInt(2146);
-            }
+            }  while((Math.abs(location[nextrandom][0]-location[firstrandom][0])>0.01D)||(Math.abs(location[nextrandom][1]-location[firstrandom][1])>0.01D)||stops[nextrandom].equals(stops[firstrandom]));
             String startstop = stops[firstrandom];
             String stopstop = stops[nextrandom];
 
@@ -111,12 +112,7 @@ public class Main {
             try {
                 System.out.println("try fast");
                 Connection fast=new Connection(startstop, stopstop, time);
-                final Runnable stuffToDo = new Thread() {
-                    @Override
-                    public void run() {
-                        fast.search();
-                    }
-                };
+                final Runnable stuffToDo = new Thread(() -> fast.search());
 
                 final ExecutorService executor = Executors.newSingleThreadExecutor();
                 final Future future = executor.submit(stuffToDo);
@@ -132,7 +128,7 @@ public class Main {
                     /* Handle the error. Or ignore it. */
                 }
                 catch (TimeoutException te) {
-                    /* Handle the timeout. Or ignore it. */
+                    System.out.println("Przekroczony czas");
                 }
                 if (!executor.isTerminated())
                     executor.shutdownNow();
@@ -144,52 +140,48 @@ public class Main {
                     String r=startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n";
                    bufferedWriter.write(r);
                    bufferedWriter.flush();
+                    try{
+                        System.out.println("try convi");
+                        Convinient convinient = new Convinient(startstop, stopstop, time, false);
+                        final Runnable stuffToDo2 = new Thread(() -> convinient.search());
+
+                        final ExecutorService executor2 = Executors.newSingleThreadExecutor();
+                        final Future future2 = executor2.submit(stuffToDo2);
+                        executor.shutdown(); // This does not cancel the already-scheduled task.
+
+                        try {
+                            future2.get(5, TimeUnit.MINUTES);
+                        }
+                        catch (InterruptedException ie) {
+                            /* Handle the interruption. Or ignore it. */
+                        }
+                        catch (ExecutionException ee) {
+                            /* Handle the error. Or ignore it. */
+                        }
+                        catch (TimeoutException te) {
+                            System.out.println("Przekroczony czas");
+                        }
+                        if (!executor.isTerminated())
+                            executor.shutdownNow();
+
+                        Route result2 = convinient.getRoute();
+                        if(result2!=null){
+                            System.out.println("make convi.txt");
+                            bufferedWriter1.newLine();
+                            bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n");
+                            bufferedWriter1.flush();
+                        }
+                    } catch (IndexOutOfBoundsException io) {
+
+                    }catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            try{
-                System.out.println("try convi");
-                Convinient convinient = new Convinient(startstop, stopstop, time, false);
-                final Runnable stuffToDo = new Thread() {
-                    @Override
-                    public void run() {
-                        convinient.search();
-                    }
-                };
 
-                final ExecutorService executor = Executors.newSingleThreadExecutor();
-                final Future future = executor.submit(stuffToDo);
-                executor.shutdown(); // This does not cancel the already-scheduled task.
-
-                try {
-                    future.get(5, TimeUnit.MINUTES);
-                }
-                catch (InterruptedException ie) {
-                    /* Handle the interruption. Or ignore it. */
-                }
-                catch (ExecutionException ee) {
-                    /* Handle the error. Or ignore it. */
-                }
-                catch (TimeoutException te) {
-                    /* Handle the timeout. Or ignore it. */
-                }
-                if (!executor.isTerminated())
-                    executor.shutdownNow();
-
-                result = convinient.getRoute();
-                if(result!=null){
-                    System.out.println("make convi.txt");
-                    bufferedWriter1.newLine();
-                    bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n");
-                    bufferedWriter1.flush();
-                }
-            } catch (IndexOutOfBoundsException io) {
-
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
 
         }
 
