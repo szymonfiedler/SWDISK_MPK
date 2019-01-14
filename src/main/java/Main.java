@@ -168,7 +168,7 @@ public class Main {
                         if(result2!=null){
                             System.out.println("make convi.txt");
                             bufferedWriter1.newLine();
-                            bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result.time + ", " + result.lines+"\n");
+                            bufferedWriter1.write(startstop + ", " + stopstop + ", " + time[0] + ":" + time[1] + ", " + result2.time + ", " + result2.lines+"\n");
                             bufferedWriter1.flush();
                         }
                     } catch (IndexOutOfBoundsException io) {
